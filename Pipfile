@@ -16,6 +16,7 @@ werkzeug = "*"
 bcrypt = "*"
 flask-jwt-extended = "*"
 flask-cors = "*"
+tensorflow = "*"
 
 [dev-packages]
 pytest = "*"

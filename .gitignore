@@ -2,3 +2,4 @@
 __pycache__/
 public/
 db-data/
+exported_model/

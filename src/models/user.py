@@ -1,39 +1,44 @@
-from sqlalchemy import Column, DateTime, String, func
+from sqlalchemy import Column, DateTime, String, Enum as SqlAlchemyEnum, func
 import uuid
-from sqlalchemy.dialects.postgresql import UUID 
+from sqlalchemy.dialects.postgresql import UUID
+from enum import Enum
 from sqlalchemy.orm import relationship
 from src.utils.db import db
 
-# class AgeEnum(Enum):
-#     AGE_17_24 = '17-24'
-#     AGE_25_30 = '25-30'
-#     AGE_31_35 = '31-35'
+class GenderEnum(Enum):
+    MALE = 'Male'
+    FEMALE = 'Female'
 
-# class ExperienceEnum(Enum):
-#     EXPERIENCE_0_2 = '0-2'
-#     EXPERIENCE_3_5 = '3-5'
-#     EXPERIENCE_6 = '6'
+class AgeEnum(Enum):
+    AGE_17_24 = '17-24'
+    AGE_25_30 = '25-30'
+    AGE_31_35 = '31-35'
 
-# class DisabilityEnum(Enum):
-#     DAKSA = "Daksa"
-#     RUNGU = "Rungu"
-#     NETRA = "Netra"
+class ExperienceEnum(Enum):
+    EXPERIENCE_0_2 = '0-2'
+    EXPERIENCE_3_5 = '3-5'
+    EXPERIENCE_6 = '6'
 
-# class CityEnum(Enum):
-#     JAKARTA = 'Jakarta'
-#     BANDUNG = 'Bandung'
-#     BOGOR = 'Bogor'
-#     DEPOK = 'Depok'
-#     BEKASI = 'Bekasi'
-#     CIMAHI = 'Cimahi'
-#     TANGERANG = 'Tangerang'
-#     SUKABUMI = 'Sukabumi'
-#     TASIKMALAYA = 'Tasikmalaya'
-#     CIREBON = 'Cirebon'
-#     SUMEDANG = 'Sumedang'
-#     PURWAKARTA = 'Purwakarta'
-#     GARUT = 'Garut'
-#     CIAMIS = 'Ciamis'
+class DisabilityEnum(Enum):
+    DAKSA = "Daksa"
+    RUNGU = "Rungu"
+    NETRA = "Netra"
+
+class CityEnum(Enum):
+    JAKARTA = 'Jakarta'
+    BANDUNG = 'Bandung'
+    BOGOR = 'Bogor'
+    DEPOK = 'Depok'
+    BEKASI = 'Bekasi'
+    CIMAHI = 'Cimahi'
+    TANGERANG = 'Tangerang'
+    SUKABUMI = 'Sukabumi'
+    TASIKMALAYA = 'Tasikmalaya'
+    CIREBON = 'Cirebon'
+    SUMEDANG = 'Sumedang'
+    PURWAKARTA = 'Purwakarta'
+    GARUT = 'Garut'
+    CIAMIS = 'Ciamis'
 
 
 
@@ -46,11 +51,31 @@ class User(db.Model):
     password = Column(String(100), nullable=False)
     email = Column(String(50), nullable=False, unique=True)
 
-    gender = Column(String(50), nullable=True)
-    age = Column(String(50), nullable=True)
-    experience = Column(String(50), nullable=True)
-    disability = Column(String(50), nullable=True)
-    city = Column(String(50), nullable=True)
+    gender = Column(SqlAlchemyEnum(
+        GenderEnum,
+        name='gender_enum',
+        values_callable=lambda obj: [e.value for e in obj]
+    ), nullable=True)
+    age = Column(SqlAlchemyEnum(
+        AgeEnum,
+        name='age_enum',
+        values_callable=lambda obj: [e.value for e in obj]
+    ), nullable=True)
+    experience = Column(SqlAlchemyEnum(
+        ExperienceEnum,
+        name='experience_enum',
+        values_callable=lambda obj: [e.value for e in obj]
+    ), nullable=True)
+    disability = Column(SqlAlchemyEnum(
+        DisabilityEnum,
+        name='disability_enum',
+        values_callable=lambda obj: [e.value for e in obj]
+    ), nullable=True)
+    city = Column(SqlAlchemyEnum(
+        CityEnum,
+        name='city_enum',
+        values_callable=lambda obj: [e.value for e in obj]
+    ), nullable=True)
     
     created_at = Column(DateTime, default=func.now())
     modified_at = Column(DateTime, default=func.now())

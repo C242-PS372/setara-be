@@ -1,8 +1,8 @@
 """baseline
 
-Revision ID: 0105c0848a54
+Revision ID: 43d9a165d5cd
 Revises: 
-Create Date: 2024-12-12 00:30:19.992398
+Create Date: 2024-12-12 01:01:54.588772
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0105c0848a54'
+revision = '43d9a165d5cd'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -42,11 +42,11 @@ def upgrade():
     sa.Column('username', sa.String(length=20), nullable=False),
     sa.Column('password', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=50), nullable=False),
-    sa.Column('gender', sa.String(length=50), nullable=True),
-    sa.Column('age', sa.String(length=50), nullable=True),
-    sa.Column('experience', sa.String(length=50), nullable=True),
-    sa.Column('disability', sa.String(length=50), nullable=True),
-    sa.Column('city', sa.String(length=50), nullable=True),
+    sa.Column('gender', sa.Enum('Male', 'Female', name='gender_enum'), nullable=True),
+    sa.Column('age', sa.Enum('17-24', '25-30', '31-35', name='age_enum'), nullable=True),
+    sa.Column('experience', sa.Enum('0-2', '3-5', '6', name='experience_enum'), nullable=True),
+    sa.Column('disability', sa.Enum('Daksa', 'Rungu', 'Netra', name='disability_enum'), nullable=True),
+    sa.Column('city', sa.Enum('Jakarta', 'Bandung', 'Bogor', 'Depok', 'Bekasi', 'Cimahi', 'Tangerang', 'Sukabumi', 'Tasikmalaya', 'Cirebon', 'Sumedang', 'Purwakarta', 'Garut', 'Ciamis', name='city_enum'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('modified_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),

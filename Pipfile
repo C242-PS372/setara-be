@@ -8,6 +8,7 @@ flask = "*"
 bcrypt = "*"
 flask-swagger-ui = "*"
 sqlalchemy = "*"
+alembic = "*"
 
 [dev-packages]
 

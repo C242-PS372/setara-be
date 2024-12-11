@@ -1,6 +1,7 @@
-from sqlalchemy import Column, DateTime, String, Integer, Enum, func
+from sqlalchemy import Column, DateTime, String, func
 import uuid
 from sqlalchemy.dialects.postgresql import UUID 
+from sqlalchemy.orm import relationship
 from src.utils.db import db
 
 # class AgeEnum(Enum):
@@ -53,6 +54,8 @@ class User(db.Model):
     
     created_at = Column(DateTime, default=func.now())
     modified_at = Column(DateTime, default=func.now())
+
+    job_application  = relationship('JobApplication', backref='user')
 
     def __repr__(self):
         return f"id: {self.id}, name: {self.name}"

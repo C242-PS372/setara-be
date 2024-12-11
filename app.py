@@ -8,6 +8,12 @@ from flask_cors import CORS
 from src.config import config
 from src.routes.routes import routes
 from src.utils.db import db
+from src.models.user import User
+from src.models.company import Company
+from src.models.job_listing import JobListing
+from src.models.job_type import JobType
+from src.models.job_application import JobApplication
+from src.models.job_recommendation import JobRecommendation
 
 # Flask App Initialization
 app = Flask(__name__)

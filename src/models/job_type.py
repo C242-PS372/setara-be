@@ -15,6 +15,7 @@ class JobType(db.Model):
     modified_at = Column(DateTime, default=func.now())
 
     job_listing  = relationship('JobListing', backref='job_type')
+    job_recommendation  = relationship('JobRecommendation', backref='job_type')
 
     def __repr__(self):
         return f"id: {self.id}, name: {self.name}"

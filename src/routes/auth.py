@@ -1,6 +1,5 @@
 from flask_restful import Api
 from src.utils.errors import errors
-from src.controllers.user import UserController
 from src.controllers.auth import SignInController, SignUpController, SelfAuth
 
 from src.middleware.jwt_auth import jwt_auth

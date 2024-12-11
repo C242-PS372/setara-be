@@ -5,10 +5,17 @@ name = "pypi"
 
 [packages]
 flask = "*"
-bcrypt = "*"
+psycopg2-binary = "*"
 flask-swagger-ui = "*"
-sqlalchemy = "*"
+flask-restful = "*"
+scikit-learn = "*"
 alembic = "*"
+sqlalchemy = "*"
+flask-migrate = "*"
+werkzeug = "*"
+bcrypt = "*"
+flask-jwt-extended = "*"
+flask-cors = "*"
 
 [dev-packages]
 

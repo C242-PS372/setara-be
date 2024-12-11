@@ -2,7 +2,7 @@ from flask import request, jsonify
 from flask_restful import Resource
 from bcrypt import gensalt, hashpw
 from src.utils.db import db
-from src.models.user import User
+from src.models import User
 from src.utils.uuid import is_valid_uuid
 
 

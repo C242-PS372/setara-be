@@ -1,9 +1,9 @@
 from flask_restful import Api
-
 from src.utils.errors import errors
-from src.middleware.jwt_auth import jwt_auth
 from src.controllers.user import UserController
-from src.routes.auth import auth_routes
+from src.controllers.auth import SignInController, SignUpController, SelfAuth
+
+from src.middleware.jwt_auth import jwt_auth
 
 routes = Api(
     catch_all_404s=True,
@@ -11,6 +11,8 @@ routes = Api(
     prefix='/api'
 )
 
-routes.add_resource(auth_routes)
+routes.add_resource(SignInController, '/auth/sign-in')
+routes.add_resource(SignUpController, '/auth/sign-up')
+routes.add_resource(SelfAuth, '/auth/self')
 
 routes.add_resource(UserController, '/user')

@@ -6,7 +6,7 @@ from datetime import timedelta
 from sqlalchemy.exc import IntegrityError
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from src.models.user import User
+from src.models import User
 from src.utils.db import db
 
 

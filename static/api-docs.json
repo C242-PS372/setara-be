@@ -1,0 +1,337 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Machine Learning API",
+    "description": "API Documentation for Machine Learning Model Training and Prediction",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/train": {
+      "post": {
+        "summary": "Train the selected machine learning model with hyperparameter optimization using Iris dataset.",
+        "description": "Accepts the algorithm and hyperparameter grid for model training and performs grid search optimization.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Algorithm and hyperparameter grid for training the model.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "algorithm": {
+                  "type": "string",
+                  "description": "The machine learning algorithm to use (e.g., 'random_forest').",
+                  "example": "random_forest"
+                },
+                "param_grid": {
+                  "type": "object",
+                  "properties": {
+                    "n_estimators": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "List of values for the number of trees in the forest.",
+                      "example": [50, 100, 200]
+                    },
+                    "max_depth": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "List of maximum depths of the tree.",
+                      "example": [5, 10, 20]
+                    }
+                  },
+                  "required": ["n_estimators", "max_depth"]
+                }
+              },
+              "required": ["algorithm", "param_grid"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Model trained successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "best_params": {
+                  "type": "object",
+                  "properties": {
+                    "max_depth": {
+                      "type": "integer",
+                      "description": "The best maximum depth of the tree.",
+                      "example": 5
+                    },
+                    "n_estimators": {
+                      "type": "integer",
+                      "description": "The best number of trees in the forest.",
+                      "example": 50
+                    }
+                  },
+                  "required": ["max_depth", "n_estimators"]
+                },
+                "best_score": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The best accuracy score of the model.",
+                  "example": 0.9666666666666668
+                },
+                "cv_results": {
+                  "type": "object",
+                  "properties": {
+                    "mean_test_score": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "description": "Mean test scores from cross-validation.",
+                      "example": [
+                        0.9666666666666668, 0.96, 0.9666666666666668, 0.96,
+                        0.96, 0.9666666666666668, 0.96, 0.96, 0.96
+                      ]
+                    },
+                    "params": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "max_depth": {
+                            "type": "integer",
+                            "example": 5
+                          },
+                          "n_estimators": {
+                            "type": "integer",
+                            "example": 50
+                          }
+                        }
+                      },
+                      "description": "Parameters tried in the grid search."
+                    },
+                    "std_test_score": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "float"
+                      },
+                      "description": "Standard deviation of test scores.",
+                      "example": [
+                        0.02108185106778919, 0.024944382578492935,
+                        0.02108185106778919, 0.024944382578492935,
+                        0.024944382578492935, 0.02108185106778919,
+                        0.024944382578492935, 0.024944382578492935,
+                        0.024944382578492935
+                      ]
+                    }
+                  },
+                  "required": ["mean_test_score", "params", "std_test_score"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data."
+          }
+        }
+      }
+    },
+    "/api/predict": {
+      "post": {
+        "summary": "Make predictions using the trained model.",
+        "description": "Accepts a JSON payload with input data (feature values) and returns predicted classes.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Input data for prediction.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "description": "A list of feature value arrays for prediction.",
+                  "example": [
+                    [5.8, 2.7, 3.9, 1.2],
+                    [6.9, 3.1, 5.1, 2.3],
+                    [5.8, 2.7, 3.9, 1.2]
+                  ]
+                }
+              },
+              "required": ["input"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prediction successful.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prediction": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "description": "The predicted class based on the input features."
+                  },
+                  "example": [1, 2, 1]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data."
+          },
+          "404": {
+            "description": "No trained model found.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message if no trained model is found.",
+                  "example": "No trained model found. Please train a model first."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "summary": "Get the current status of the model.",
+        "description": "Returns whether the model is trained, the algorithm used, and key model details.",
+        "responses": {
+          "200": {
+            "description": "Status retrieved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Indicates if the model is trained.",
+                  "example": "Model is trained."
+                },
+                "model_type": {
+                  "type": "string",
+                  "description": "The algorithm used for training the model.",
+                  "example": "RandomForestClassifier"
+                },
+                "best_params": {
+                  "type": "object",
+                  "description": "The best hyperparameters used for the trained model.",
+                  "properties": {
+                    "bootstrap": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "ccp_alpha": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "class_weight": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "criterion": {
+                      "type": "string",
+                      "example": "gini"
+                    },
+                    "max_depth": {
+                      "type": "integer",
+                      "example": 5
+                    },
+                    "max_features": {
+                      "type": "string",
+                      "example": "sqrt"
+                    },
+                    "max_leaf_nodes": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "max_samples": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "min_impurity_decrease": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "min_samples_leaf": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "min_samples_split": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "min_weight_fraction_leaf": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "monotonic_cst": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "n_estimators": {
+                      "type": "integer",
+                      "example": 50
+                    },
+                    "n_jobs": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "oob_score": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "random_state": {
+                      "type": "string",
+                      "example": "null"
+                    },
+                    "verbose": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "warm_start": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                },
+                "num_classes": {
+                  "type": "integer",
+                  "description": "The number of classes in the trained model.",
+                  "example": 3
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No trained model found.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message if no trained model is found.",
+                  "example": "No trained model found. Please train a model first."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

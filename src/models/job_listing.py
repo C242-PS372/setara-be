@@ -3,14 +3,24 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import relationship
 from enum import Enum
+from dataclasses import dataclass
 from src.utils.db import db
 
 class JobListingStatus(Enum):
     OPEN = 'Open'
     CLOSED = 'Closed'
 
+@dataclass
 class JobListing(db.Model):
     __tablename__ = 'job_listings'
+
+    id: str
+    company_id: str
+    job_type_id: str
+    status: str
+    description: str
+    created_at: DateTime
+    modified_at: DateTime
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     company_id = Column(UUID(as_uuid=True), ForeignKey('companies.id'), nullable=False)

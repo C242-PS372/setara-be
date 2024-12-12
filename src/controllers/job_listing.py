@@ -6,7 +6,7 @@ from src.models.job_listing import JobListing, JobListingStatus
 from src.utils.uuid import is_valid_uuid
 
 
-class JobListingControlelr(Resource):
+class JobListingController(Resource):
     def get(self):
         try:
             job_listing_id = request.args.get("id")

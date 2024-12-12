@@ -1,9 +1,13 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from bcrypt import gensalt, hashpw
+from sqlalchemy import or_, select
 from src.utils.db import db
 from src.models.user import User
+from src.models.job_recommendation import JobRecommendation
+from src.models.job_type import JobType
 from src.utils.uuid import is_valid_uuid
+from src.utils.parse_int import parse_int
 
 
 class UserController(Resource):
@@ -113,3 +117,71 @@ class UserController(Resource):
         except Exception as e:
             db.session.rollback()
             return {'message': f'Error occurred: {str(e)}'}, 500
+        
+class UserAllController(Resource):
+    def get(self):
+        try:
+            search = request.args.get("search", "")
+            page = parse_int(request.args.get("page"), 1)
+            limit = parse_int(request.args.get("limit"), 10)
+
+            page = 1
+            limit = 10
+            
+            if page < 1:
+                page = 1
+            if limit < 1:
+                limit = 10
+
+            query = User.query
+            if search:
+                query = query.filter(
+                    or_(
+                        User.name.like(f"%{search}%"),
+                        User.username.like(f"%{search}%"),
+                        User.email.like(f"%{search}%")
+                    )
+                )
+            
+            offset = (page - 1) * limit
+            users = query.offset(offset).limit(limit).all()
+
+            return jsonify({
+                "users": users,
+                "page": page,
+                "limit": limit,
+                "total": query.count()
+            })
+        
+        except AttributeError :
+            return {"message" : "Bad Request"}, 400
+        
+        except Exception as e:
+            return {"message": f"An error occurred: {str(e)}"}, 500
+
+class UserJobRecommendationController(Resource):
+    def get(self):
+        try:
+            user_id = request.args.get("user_id")
+
+            query = (
+                select(JobType.title)
+                .select_from(JobRecommendation)
+                .join(JobType, JobRecommendation.job_type_id == JobType.id)
+                .where(JobRecommendation.user_id == user_id)
+                .order_by(JobRecommendation.created_at.desc())
+            )
+            results = db.session.execute(query).scalars().all()
+
+            return jsonify({
+                "job_recommendation": results[0],
+                "job_recommendation_all": results,
+            })
+        
+        except AttributeError :
+            return {"message" : "Bad Request"}, 400
+        
+        except Exception as e:
+            return {"message": f"An error occurred: {str(e)}"}, 500
+
+            

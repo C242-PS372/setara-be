@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from enum import Enum
 from sqlalchemy.orm import relationship
+from dataclasses import dataclass
 from src.utils.db import db
 
 class GenderEnum(Enum):
@@ -40,10 +41,22 @@ class CityEnum(Enum):
     GARUT = 'Garut'
     CIAMIS = 'Ciamis'
 
-
-
+@dataclass
 class User(db.Model):
     __tablename__ = 'users'
+
+    id: str
+    name: str
+    username: str
+    password: str
+    email: str
+    gender: str
+    age: str
+    experience: str
+    disability: str
+    city: str
+    created_at: DateTime
+    modified_at: DateTime
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(100), nullable=False)

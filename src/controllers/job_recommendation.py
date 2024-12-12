@@ -3,6 +3,7 @@ from flask import request, jsonify
 from flask_restful import Resource
 from src.utils.db import db
 from src.utils.predict_model import PredictModel
+from src.models.user import User
 from src.models.job_recommendation import JobRecommendation
 from src.models.job_type import JobType
 from src.utils.uuid import is_valid_uuid
@@ -47,6 +48,15 @@ class JobRecommendationController(Resource):
 
             if (not (disability and age and experience and city and user_id)):
                 return {'message': 'Bad Request'}, 400
+            
+            user = User.query.get(user_id)
+            if not user:
+                return {'message': 'User not found'}, 404
+            
+            user.age = age
+            user.disability = disability
+            user.city = city
+            user.experience = experience
 
             job_recommendation = PredictModel().predict(
                 disability=disability,

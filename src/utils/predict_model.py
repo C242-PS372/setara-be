@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import joblib
 import os
+from google.cloud import storage
 
 class PredictModel:
     _instance = None
@@ -13,22 +14,41 @@ class PredictModel:
         return cls._instance
     
     def initialize(self):
-        self.model_path = os.path.join(os.environ.get('MODEL_PATH'), os.environ.get('MODEL_NAME'))
-        self.encoder_path = os.path.join(os.environ.get('ENCODER_PATH'))
+        self.bucket_name = os.environ.get('GOOGLE_S3_BUCKET_NAME')
+        self.model_path = os.environ.get('MODEL_PATH')
+        self.model_name = os.environ.get('MODEL_NAME')
+        self.encoder_path = os.environ.get('ENCODER_PATH')
         
+        self.client = storage.Client()
 
-        self.interpreter = tf.lite.Interpreter(
-            model_path=self.model_path)
+        if not os.path.exists('./tmp'):
+            os.makedirs('./tmp')
+
+        self.model_local_path = self.download_file(self.model_path, self.model_name)
+
+        self.interpreter = tf.lite.Interpreter(model_path=self.model_local_path)
         self.interpreter.allocate_tensors()
 
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
 
-        self.disability_encoder = joblib.load(os.path.join(self.encoder_path, 'disability_encoder.joblib'))
-        self.age_encoder = joblib.load(os.path.join(self.encoder_path, 'age_encoder.joblib'))
-        self.experience_encoder = joblib.load(os.path.join(self.encoder_path, 'experience_encoder.joblib'))
-        self.city_encoder = joblib.load(os.path.join(self.encoder_path, 'city_encoder.joblib'))
-        self.job_encoder = joblib.load(os.path.join(self.encoder_path, 'job_encoder.joblib'))
+        self.disability_encoder = self.load_encoder('disability_encoder.joblib')
+        self.age_encoder = self.load_encoder('age_encoder.joblib')
+        self.experience_encoder = self.load_encoder('experience_encoder.joblib')
+        self.city_encoder = self.load_encoder('city_encoder.joblib')
+        self.job_encoder = self.load_encoder('job_encoder.joblib')
+
+    def download_file(self, folder_path, file_name):
+        bucket = self.client.bucket(self.bucket_name)
+        blob = bucket.blob(os.path.join(folder_path, file_name))
+
+        local_path = os.path.join('./tmp', file_name) 
+        blob.download_to_filename(local_path)
+        return local_path
+    
+    def load_encoder(self, encoder_file_name):
+        local_path = self.download_file(self.encoder_path, encoder_file_name)
+        return joblib.load(local_path)
 
     def predict(self, disability, age, experience, city):
         # Prepare input data - reshape as 2D arrays

@@ -92,3 +92,29 @@ class JobRecommendationController(Resource):
         except Exception as e:
             db.session.rollback()
             return {'message': f'Error occurred: {str(e)}'}, 500
+
+class JobRecommendationAlternateController(Resource):
+    def post(self):
+        try:
+            # Get request body
+            body = request.get_json()
+            disability = body.get('disability')
+            age = body.get('age')
+            experience = body.get('experience')
+            city = body.get('city')
+
+            if (not (disability and age and experience and city)):
+                return {'message': 'Bad Request'}, 400
+
+            job_recommendation = PredictModel().predict(
+                disability=disability,
+                age=age,
+                experience=experience,
+                city=city
+            )
+
+            return {'message': job_recommendation}, 201
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'message': f'Error occurred: {str(e)}'}, 500

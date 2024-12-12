@@ -9,7 +9,7 @@ class JobType(db.Model):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     title = Column(String(100), nullable=False)
-    decription = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
     
     created_at = Column(DateTime, default=func.now())
     modified_at = Column(DateTime, default=func.now())

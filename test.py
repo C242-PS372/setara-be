@@ -56,8 +56,8 @@ def predict_job(disability, age, experience, city,
 
 
 result = predict_job(
-    disability="Netra",
-    age="31-35",
+    disability="Rungu",
+    age="25-30",
     experience="6",
     city="Jakarta",
     disability_encoder=disability_encoder,

@@ -15,6 +15,7 @@ class PredictModel:
     def initialize(self):
         self.model_path = os.path.join(os.environ.get('MODEL_PATH'), os.environ.get('MODEL_NAME'))
         self.encoder_path = os.path.join(os.environ.get('ENCODER_PATH'))
+        
 
         self.interpreter = tf.lite.Interpreter(
             model_path=self.model_path)
